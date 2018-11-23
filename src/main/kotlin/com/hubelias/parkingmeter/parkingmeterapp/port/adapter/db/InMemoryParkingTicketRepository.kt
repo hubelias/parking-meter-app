@@ -2,6 +2,7 @@ package com.hubelias.parkingmeter.parkingmeterapp.port.adapter.db
 
 import com.hubelias.parkingmeter.parkingmeterapp.domain.ParkingTicket
 import com.hubelias.parkingmeter.parkingmeterapp.domain.ParkingTicketRepository
+import com.hubelias.parkingmeter.parkingmeterapp.domain.VehicleId
 import org.springframework.stereotype.Repository
 import java.util.concurrent.ConcurrentHashMap
 
@@ -13,11 +14,11 @@ class InMemoryParkingTicketRepository : ParkingTicketRepository {
         tickets[parkingTicket.id] = parkingTicket
     }
 
-    override fun getStartedByVehicleId(vehicleId: String): ParkingTicket? {
+    override fun getStartedTicket(vehicleId: VehicleId): ParkingTicket? {
         return tickets.values.find { it.vehicleId == vehicleId }
     }
 
-    override fun doesStartedTicketExist(vehicleId: String): Boolean {
+    override fun doesStartedTicketExist(vehicleId: VehicleId): Boolean {
         return tickets.values.any { it.hasNotEnded && it.vehicleId == vehicleId }
     }
 
