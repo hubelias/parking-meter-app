@@ -1,9 +1,11 @@
 package com.hubelias.parkingmeter.parkingmeterapp.application
 
+import com.hubelias.parkingmeter.parkingmeterapp.application.common.DomainEventPublisher
+import com.hubelias.parkingmeter.parkingmeterapp.application.tickets.ParkingTicketApplicationService
 import com.hubelias.parkingmeter.parkingmeterapp.domain.DriverId
-import com.hubelias.parkingmeter.parkingmeterapp.domain.ParkingEnded
-import com.hubelias.parkingmeter.parkingmeterapp.domain.ParkingTicketRepository
 import com.hubelias.parkingmeter.parkingmeterapp.domain.common.DateTimeProvider
+import com.hubelias.parkingmeter.parkingmeterapp.domain.tickets.ParkingEnded
+import com.hubelias.parkingmeter.parkingmeterapp.domain.tickets.ParkingTicketRepository
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyZeroInteractions
@@ -23,12 +25,12 @@ import java.time.LocalDateTime
 
 @RunWith(SpringRunner::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
-class ParkingMeterServiceSpec {
+class ParkingTicketApplicationServiceSpec {
 
     @Autowired
     private lateinit var parkingTicketRepository: ParkingTicketRepository
     @Autowired
-    private lateinit var parkingMeterService: ParkingMeterService
+    private lateinit var parkingTicketApplicationService: ParkingTicketApplicationService
     @MockBean
     private lateinit var domainEventPublisher: DomainEventPublisher
     @MockBean
@@ -45,7 +47,7 @@ class ParkingMeterServiceSpec {
         val vehicleId = "WW 123456"
 
         // then
-        assertFalse(parkingMeterService.isMeterStarted(vehicleId))
+        assertFalse(parkingTicketApplicationService.isMeterStarted(vehicleId))
         verifyZeroInteractions(domainEventPublisher)
     }
 
@@ -58,7 +60,7 @@ class ParkingMeterServiceSpec {
         parkingMeterIsStarted(vehicleId = vehicleId)
 
         // then
-        assertTrue(parkingMeterService.isMeterStarted(vehicleId))
+        assertTrue(parkingTicketApplicationService.isMeterStarted(vehicleId))
         verifyZeroInteractions(domainEventPublisher)
     }
 
@@ -86,7 +88,7 @@ class ParkingMeterServiceSpec {
         parkingMeterIsStopped(vehicleId, stopTime)
 
         //then
-        assertFalse(parkingMeterService.isMeterStarted(vehicleId))
+        assertFalse(parkingTicketApplicationService.isMeterStarted(vehicleId))
         verify(domainEventPublisher)
                 .publish(ParkingEnded(DriverId(driverId), parkingDuration, stopTime))
     }
@@ -97,7 +99,7 @@ class ParkingMeterServiceSpec {
         val vehicleId = "WW 123456"
 
         //when
-        parkingMeterService.stopMeter(vehicleId)
+        parkingTicketApplicationService.stopMeter(vehicleId)
         verifyZeroInteractions(domainEventPublisher)
     }
 
@@ -112,7 +114,7 @@ class ParkingMeterServiceSpec {
             startTime: LocalDateTime = LocalDateTime.now()
     ) {
         whenever(dateTimeProvider.currentDateTime()).doReturn(startTime)
-        parkingMeterService.startMeter(driverId, vehicleId)
+        parkingTicketApplicationService.startMeter(driverId, vehicleId)
     }
 
     private fun parkingMeterIsStopped(
@@ -120,6 +122,6 @@ class ParkingMeterServiceSpec {
             stopTime: LocalDateTime = LocalDateTime.now()
     ) {
         whenever(dateTimeProvider.currentDateTime()).doReturn(stopTime)
-        parkingMeterService.stopMeter(vehicleId)
+        parkingTicketApplicationService.stopMeter(vehicleId)
     }
 }

@@ -1,11 +1,16 @@
-package com.hubelias.parkingmeter.parkingmeterapp.application
+package com.hubelias.parkingmeter.parkingmeterapp.application.tickets
 
-import com.hubelias.parkingmeter.parkingmeterapp.domain.*
+import com.hubelias.parkingmeter.parkingmeterapp.application.common.DomainEventPublisher
+import com.hubelias.parkingmeter.parkingmeterapp.domain.DriverId
 import com.hubelias.parkingmeter.parkingmeterapp.domain.common.DateTimeProvider
+import com.hubelias.parkingmeter.parkingmeterapp.domain.tickets.ParkingEnded
+import com.hubelias.parkingmeter.parkingmeterapp.domain.tickets.ParkingTicket
+import com.hubelias.parkingmeter.parkingmeterapp.domain.tickets.ParkingTicketRepository
+import com.hubelias.parkingmeter.parkingmeterapp.domain.tickets.VehicleId
 import org.springframework.stereotype.Service
 
 @Service
-class ParkingMeterService(
+class ParkingTicketApplicationService(
         private val parkingTicketRepository: ParkingTicketRepository,
         private val domainEventPublisher: DomainEventPublisher,
         private val dateTimeProvider: DateTimeProvider
@@ -25,7 +30,7 @@ class ParkingMeterService(
     }
 
     fun stopMeter(vehicleId: String) {
-        val ticket = parkingTicketRepository.getStartedTicket(VehicleId(vehicleId))
+        val ticket = parkingTicketRepository.findStartedTicket(VehicleId(vehicleId))
                 ?: throw IllegalArgumentException("There is no started ticket for vehicle $vehicleId")
 
         ticket.endParking(dateTimeProvider)
