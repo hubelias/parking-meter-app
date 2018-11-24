@@ -1,8 +1,8 @@
-package com.hubelias.parkingmeter.parkingmeterapp.domain
+package com.hubelias.parkingmeter.parkingmeterapp.domain.tickets
 
 interface ParkingTicketRepository {
     fun add(parkingTicket: ParkingTicket)
-    fun getStartedTicket(vehicleId: VehicleId): ParkingTicket?
+    fun findStartedTicket(vehicleId: VehicleId): ParkingTicket?
     fun doesStartedTicketExist(vehicleId: VehicleId): Boolean
     fun removeAll()
 }
