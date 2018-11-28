@@ -1,5 +1,7 @@
-package com.hubelias.parkingmeter.parkingmeterapp.domain.common
+package com.hubelias.parkingmeter.parkingmeterapp.domain.fees
 
+import com.hubelias.parkingmeter.parkingmeterapp.domain.money.PLN
+import com.hubelias.parkingmeter.parkingmeterapp.domain.money.times
 import org.joda.money.CurrencyMismatchException
 import org.joda.money.CurrencyUnit.USD
 import org.joda.money.Money
