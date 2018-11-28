@@ -1,13 +1,13 @@
 package com.hubelias.parkingmeter.parkingmeterapp.port.adapter.db
 
-import com.hubelias.parkingmeter.parkingmeterapp.domain.tickets.ParkingOccupation
-import com.hubelias.parkingmeter.parkingmeterapp.domain.tickets.ParkingTicketRepository
-import com.hubelias.parkingmeter.parkingmeterapp.domain.tickets.VehicleId
+import com.hubelias.parkingmeter.parkingmeterapp.domain.occupation.ParkingOccupation
+import com.hubelias.parkingmeter.parkingmeterapp.domain.occupation.ParkingOccupationRepository
+import com.hubelias.parkingmeter.parkingmeterapp.domain.occupation.VehicleId
 import org.springframework.stereotype.Repository
 import java.util.concurrent.ConcurrentHashMap
 
 @Repository
-class InMemoryParkingTicketRepository : ParkingTicketRepository {
+class InMemoryParkingOccupationRepository : ParkingOccupationRepository {
     private val tickets = ConcurrentHashMap<String, ParkingOccupation>()
 
     override fun add(parkingOccupation: ParkingOccupation) {
@@ -18,8 +18,12 @@ class InMemoryParkingTicketRepository : ParkingTicketRepository {
         return tickets.values.find { it.vehicleId == vehicleId }
     }
 
-    override fun doesStartedTicketExist(vehicleId: VehicleId): Boolean {
-        return tickets.values.any { it.parkingDuration != null && it.vehicleId == vehicleId }
+    override fun remove(parkingOccupation: ParkingOccupation) {
+        tickets.remove(parkingOccupation.id)
+    }
+
+    override fun isParkingRegistered(vehicleId: VehicleId): Boolean {
+        return tickets.values.any { it.vehicleId == vehicleId }
     }
 
     override fun removeAll() {

@@ -1,11 +1,12 @@
 package com.hubelias.parkingmeter.parkingmeterapp.port.adapter.db
 
-import com.hubelias.parkingmeter.parkingmeterapp.domain.DriverId
-import com.hubelias.parkingmeter.parkingmeterapp.domain.common.PLN
-import com.hubelias.parkingmeter.parkingmeterapp.domain.fees.ParkingReceipt
+import com.hubelias.parkingmeter.parkingmeterapp.domain.driver.UserId
+import com.hubelias.parkingmeter.parkingmeterapp.domain.receipt.PLN
+import com.hubelias.parkingmeter.parkingmeterapp.domain.receipt.ParkingReceipt
 import org.assertj.core.api.Assertions.assertThat
 import org.joda.money.Money
 import org.junit.Test
+import java.time.LocalDateTime
 
 class InMemoryParkingReceiptRepositoryTest {
 
@@ -14,9 +15,9 @@ class InMemoryParkingReceiptRepositoryTest {
     @Test
     fun testFindByDriver() {
         // given
-        val driverId = DriverId("good.driver")
-        val aReceipt = ParkingReceipt(driverId, Money.of(PLN, 3.0))
-        val anotherDriverId = DriverId("better.driver")
+        val driverId = UserId("good.driver")
+        val aReceipt = ParkingReceipt(driverId, LocalDateTime.now(), Money.of(PLN, 3.0))
+        val anotherDriverId = UserId("better.driver")
 
         // then
         assertThat(parkingReceiptRepository.findByDriver(driverId)).isEmpty()

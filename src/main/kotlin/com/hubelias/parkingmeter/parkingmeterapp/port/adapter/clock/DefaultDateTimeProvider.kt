@@ -1,6 +1,6 @@
 package com.hubelias.parkingmeter.parkingmeterapp.port.adapter.clock
 
-import com.hubelias.parkingmeter.parkingmeterapp.domain.common.DateTimeProvider
+import com.hubelias.parkingmeter.parkingmeterapp.domain.occupation.DateTimeProvider
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 

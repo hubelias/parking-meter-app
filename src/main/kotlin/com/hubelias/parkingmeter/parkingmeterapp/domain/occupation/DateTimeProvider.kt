@@ -1,4 +1,4 @@
-package com.hubelias.parkingmeter.parkingmeterapp.domain.parking.occupation
+package com.hubelias.parkingmeter.parkingmeterapp.domain.occupation
 
 import java.time.LocalDateTime
 

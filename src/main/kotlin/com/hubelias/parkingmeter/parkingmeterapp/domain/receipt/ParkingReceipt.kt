@@ -1,8 +1,7 @@
-package com.hubelias.parkingmeter.parkingmeterapp.domain.parking.receipt
+package com.hubelias.parkingmeter.parkingmeterapp.domain.receipt
 
 import com.hubelias.parkingmeter.parkingmeterapp.application.ParkingReceiptDto
-import com.hubelias.parkingmeter.parkingmeterapp.domain.money.dto
-import com.hubelias.parkingmeter.parkingmeterapp.domain.parking.driver.UserId
+import com.hubelias.parkingmeter.parkingmeterapp.domain.driver.UserId
 import org.joda.money.Money
 import java.time.LocalDateTime
 import java.util.*

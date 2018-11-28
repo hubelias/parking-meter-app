@@ -1,6 +1,6 @@
-package com.hubelias.parkingmeter.parkingmeterapp.domain.parking.receipt
+package com.hubelias.parkingmeter.parkingmeterapp.domain.receipt
 
-import com.hubelias.parkingmeter.parkingmeterapp.domain.parking.driver.UserId
+import com.hubelias.parkingmeter.parkingmeterapp.domain.driver.UserId
 
 
 interface ParkingReceiptRepository {

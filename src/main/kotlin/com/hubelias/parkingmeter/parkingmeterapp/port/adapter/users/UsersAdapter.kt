@@ -1,13 +1,13 @@
-package com.hubelias.parkingmeter.parkingmeterapp.port.adapter.db
+package com.hubelias.parkingmeter.parkingmeterapp.port.adapter.users
 
-import com.hubelias.parkingmeter.parkingmeterapp.domain.parking.driver.Driver
-import com.hubelias.parkingmeter.parkingmeterapp.domain.user.UserId
-import com.hubelias.parkingmeter.parkingmeterapp.domain.user.UserRepository
-import org.springframework.stereotype.Repository
+import com.hubelias.parkingmeter.parkingmeterapp.domain.driver.Driver
+import com.hubelias.parkingmeter.parkingmeterapp.domain.driver.DriverProvider
+import com.hubelias.parkingmeter.parkingmeterapp.domain.driver.UserId
+import org.springframework.stereotype.Service
 
 
-@Repository
-class FakeUserRepository : UserRepository {
+@Service
+class UsersAdapter : DriverProvider {
     override fun getDriver(userId: UserId): Driver? {
         return Driver(userId, Driver.Type.REGULAR)
     }

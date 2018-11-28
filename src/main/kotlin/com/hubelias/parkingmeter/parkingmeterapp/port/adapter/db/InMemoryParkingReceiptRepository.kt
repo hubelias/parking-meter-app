@@ -1,8 +1,8 @@
 package com.hubelias.parkingmeter.parkingmeterapp.port.adapter.db
 
-import com.hubelias.parkingmeter.parkingmeterapp.domain.DriverId
-import com.hubelias.parkingmeter.parkingmeterapp.domain.fees.ParkingReceipt
-import com.hubelias.parkingmeter.parkingmeterapp.domain.fees.ParkingReceiptRepository
+import com.hubelias.parkingmeter.parkingmeterapp.domain.driver.UserId
+import com.hubelias.parkingmeter.parkingmeterapp.domain.receipt.ParkingReceipt
+import com.hubelias.parkingmeter.parkingmeterapp.domain.receipt.ParkingReceiptRepository
 import org.springframework.stereotype.Repository
 import java.util.concurrent.ConcurrentHashMap
 
@@ -14,8 +14,8 @@ class InMemoryParkingReceiptRepository : ParkingReceiptRepository {
         receipts.add(parkingReceipt)
     }
 
-    override fun findByDriver(driverId: DriverId): List<ParkingReceipt> {
-        return receipts.filter { it.driverId == driverId }
+    override fun findByDriver(userId: UserId): List<ParkingReceipt> {
+        return receipts.filter { it.userId == userId }
     }
 
     override fun removeAll() {
