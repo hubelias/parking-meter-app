@@ -1,4 +1,4 @@
-package com.hubelias.parkingmeter.parkingmeterapp.domain.parking.driver
+package com.hubelias.parkingmeter.parkingmeterapp.domain.driver
 
 
 class Driver(

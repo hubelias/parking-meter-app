@@ -1,9 +1,9 @@
-package com.hubelias.parkingmeter.parkingmeterapp.domain.parking.occupation
+package com.hubelias.parkingmeter.parkingmeterapp.domain.occupation
 
-import com.hubelias.parkingmeter.parkingmeterapp.domain.parking.driver.Driver
-import com.hubelias.parkingmeter.parkingmeterapp.domain.parking.receipt.ParkingDuration
-import com.hubelias.parkingmeter.parkingmeterapp.domain.parking.receipt.ParkingFeeCalculator
-import com.hubelias.parkingmeter.parkingmeterapp.domain.parking.receipt.ParkingReceipt
+import com.hubelias.parkingmeter.parkingmeterapp.domain.driver.Driver
+import com.hubelias.parkingmeter.parkingmeterapp.domain.receipt.ParkingDuration
+import com.hubelias.parkingmeter.parkingmeterapp.domain.receipt.ParkingFeeCalculator
+import com.hubelias.parkingmeter.parkingmeterapp.domain.receipt.ParkingReceipt
 import java.time.LocalDateTime
 
 

@@ -1,4 +1,4 @@
-package com.hubelias.parkingmeter.parkingmeterapp.domain.money
+package com.hubelias.parkingmeter.parkingmeterapp.domain.receipt
 
 import com.hubelias.parkingmeter.parkingmeterapp.application.MoneyDto
 import org.joda.money.CurrencyUnit

@@ -1,7 +1,5 @@
-package com.hubelias.parkingmeter.parkingmeterapp.domain.fees
+package com.hubelias.parkingmeter.parkingmeterapp.domain.receipt
 
-import com.hubelias.parkingmeter.parkingmeterapp.domain.money.PLN
-import com.hubelias.parkingmeter.parkingmeterapp.domain.money.times
 import org.joda.money.CurrencyMismatchException
 import org.joda.money.CurrencyUnit.USD
 import org.joda.money.Money
@@ -9,7 +7,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 
-class MoneyUtilsTest {
+class MoneyTest {
     @Test(expected = ArithmeticException::class)
     fun testPLN_tooMuchDecimalPlaces() {
         Money.of(PLN, 2.005)

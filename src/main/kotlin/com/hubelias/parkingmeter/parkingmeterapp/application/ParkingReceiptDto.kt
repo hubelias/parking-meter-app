@@ -1,3 +1,5 @@
-package com.hubelias.parkingmeter.parkingmeterapp.application.fees
+package com.hubelias.parkingmeter.parkingmeterapp.application
 
-data class ParkingReceiptDto(val cost: MoneyDto)
+data class ParkingReceiptDto(
+        val cost: MoneyDto
+)

@@ -1,15 +1,17 @@
-package com.hubelias.parkingmeter.parkingmeterapp.application
+package com.hubelias.parkingmeter.parkingmeterapp.acceptance.tests
 
-import com.hubelias.parkingmeter.parkingmeterapp.domain.parking.driver.Driver
-import com.hubelias.parkingmeter.parkingmeterapp.domain.parking.driver.DriverProvider
-import com.hubelias.parkingmeter.parkingmeterapp.domain.parking.occupation.DateTimeProvider
-import com.hubelias.parkingmeter.parkingmeterapp.domain.parking.receipt.ParkingReceiptRepository
-import com.hubelias.parkingmeter.parkingmeterapp.domain.user.UserId
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doAnswer
+import com.hubelias.parkingmeter.parkingmeterapp.application.MoneyDto
+import com.hubelias.parkingmeter.parkingmeterapp.application.ParkingMeterFacade
+import com.hubelias.parkingmeter.parkingmeterapp.application.ParkingReceiptDto
+import com.hubelias.parkingmeter.parkingmeterapp.domain.driver.Driver
+import com.hubelias.parkingmeter.parkingmeterapp.domain.driver.DriverProvider
+import com.hubelias.parkingmeter.parkingmeterapp.domain.driver.UserId
+import com.hubelias.parkingmeter.parkingmeterapp.domain.occupation.DateTimeProvider
+import com.hubelias.parkingmeter.parkingmeterapp.domain.receipt.ParkingReceiptRepository
+import com.hubelias.parkingmeter.parkingmeterapp.fixtures.randomDriverId
+import com.hubelias.parkingmeter.parkingmeterapp.fixtures.randomVehicleId
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.whenever
-import junitparams.JUnitParamsRunner
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Before
@@ -21,7 +23,6 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.junit4.SpringRunner
 import java.time.Duration
 import java.time.LocalDateTime
-import kotlin.math.exp
 
 /**
  * no receipts at the beginning
@@ -30,7 +31,7 @@ import kotlin.math.exp
  */
 @RunWith(SpringRunner::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
-class ParkingFeesApplicationServiceSpec {
+class ParkingFeesAcceptanceTests {
     @Autowired
     private lateinit var parkingReceiptRepository: ParkingReceiptRepository
     @Autowired
@@ -44,13 +45,12 @@ class ParkingFeesApplicationServiceSpec {
     fun setUp() {
         parkingReceiptRepository.removeAll()
         whenever(dateTimeProvider.currentDateTime()) doReturn LocalDateTime.now()
-        whenever(driverProvider.getDriver(any())) doAnswer { Driver(it.getArgument(0), Driver.Type.REGULAR) }
     }
 
     @Test
     fun noReceiptsAtTheBeginning() {
         // given
-        val driverId = randomValidDriverId()
+        val driverId = randomDriverId()
 
         // then
         assertThat(parkingMeterFacade.findDriverReceipts(driverId)).isEmpty()
@@ -59,11 +59,10 @@ class ParkingFeesApplicationServiceSpec {
     @Test
     fun noReceiptsWhenParkingStarted() {
         // given
-        val driverId = "some.driver"
-        val vehicleId = "another.driver"
+        val driverId = regularDriverExists(randomDriverId())
 
         // when
-        parkingMeterFacade.startParking(driverId, vehicleId)
+        parkingMeterFacade.startParking(driverId, randomVehicleId())
 
         // then
         assertThat(parkingMeterFacade.findDriverReceipts(driverId)).isEmpty()
@@ -72,8 +71,8 @@ class ParkingFeesApplicationServiceSpec {
     @Test
     fun createReceiptForCorrectDriverWhenParkingEnded() {
         // given
-        val driverId = "some.driver"
-        val anotherDriverId = "another.driver"
+        val driverId = regularDriverExists("some.driver")
+        val anotherDriverId = regularDriverExists("another.driver")
 
         // when
         parkingStartedAndEnded(driverId)
@@ -113,31 +112,31 @@ class ParkingFeesApplicationServiceSpec {
 
     @Test
     fun correctFee_disabledLessThanHour() =
-            testRegularFeeCalculation(Duration.ofMinutes(25), 0.0)
+            testDisabledFeeCalculation(Duration.ofMinutes(25), 0.0)
 
     @Test
     fun correctFee_disabledOneHour() =
-            testRegularFeeCalculation(Duration.ofHours(1), 0.0)
+            testDisabledFeeCalculation(Duration.ofHours(1), 0.0)
 
     @Test
     fun correctFee_disabledOneAndHalfHour() =
-            testRegularFeeCalculation(Duration.ofMinutes(75), 2.0)
+            testDisabledFeeCalculation(Duration.ofMinutes(75), 2.0)
 
     @Test
     fun correctFee_disabledTwoHours() =
-            testRegularFeeCalculation(Duration.ofHours(2), 2.0)
+            testDisabledFeeCalculation(Duration.ofHours(2), 2.0)
 
     @Test
     fun correctFee_disabledTwoAndAHalfHour() =
-            testRegularFeeCalculation(Duration.ofMinutes(150), 2.0 + 2.4)
+            testDisabledFeeCalculation(Duration.ofMinutes(150), 2.0 + 2.4)
 
     @Test
     fun correctFee_disabledThreeHours() =
-            testRegularFeeCalculation(Duration.ofHours(3), 2.0 + 2.4)
+            testDisabledFeeCalculation(Duration.ofHours(3), 2.0 + 2.4)
 
     @Test
     fun correctFee_disabledFourHours() =
-            testRegularFeeCalculation(Duration.ofHours(4), 2.0 + 2.4 + 2.88)
+            testDisabledFeeCalculation(Duration.ofHours(4), 2.0 + 2.4 + 2.88)
 
     @After
     fun tearDown() {
@@ -148,49 +147,51 @@ class ParkingFeesApplicationServiceSpec {
             driverId: String,
             parkingDuration: Duration = Duration.ofMinutes(25)
     ) {
+        val vehicleId = randomVehicleId()
         val startTime = LocalDateTime.now()
-        whenever(dateTimeProvider.currentDateTime()).doReturn(startTime, startTime.plus(parkingDuration))
-        val vehicleId = randomValidVehicleId()
+
+        whenever(dateTimeProvider.currentDateTime()).doReturn(startTime)
         parkingMeterFacade.startParking(driverId, vehicleId)
+
+        whenever(dateTimeProvider.currentDateTime()).doReturn(startTime.plus(parkingDuration))
         parkingMeterFacade.endParking(vehicleId)
     }
 
     private fun testRegularFeeCalculation(parkingDuration: Duration, expectedCostInPLN: Double) {
         // given
-        val driverId = randomValidDriverId()
+        val driverId = randomDriverId()
         regularDriverExists(driverId)
 
         // when & then
         testFeeCalculation(driverId, parkingDuration, expectedCostInPLN)
     }
 
-    private fun regularDriverExists(driverId: String) {
+    private fun regularDriverExists(driverId: String): String {
         val userId = UserId(driverId)
         whenever(driverProvider.getDriver(userId)) doReturn Driver(userId, Driver.Type.REGULAR)
+        return driverId
     }
 
     private fun testDisabledFeeCalculation(parkingDuration: Duration, expectedCostInPLN: Double) {
         // given
-        val driverId = randomValidDriverId()
+        val driverId = randomDriverId()
         disabledDriverExists(driverId)
 
         // when & then
         testFeeCalculation(driverId, parkingDuration, expectedCostInPLN)
     }
 
-    private fun disabledDriverExists(driverId: String) {
+    private fun disabledDriverExists(driverId: String): String {
         val userId = UserId(driverId)
         whenever(driverProvider.getDriver(userId)) doReturn Driver(userId, Driver.Type.DISABLED)
+        return driverId
     }
 
     private fun testFeeCalculation(driverId: String, parkingDuration: Duration, expectedCostInPLN: Double) {
         // when
-        parkingStartedAndEnded(driverId, Duration.ofMinutes(25))
+        parkingStartedAndEnded(driverId, parkingDuration)
 
         // then
-        assertThat(parkingMeterFacade.findDriverReceipts(driverId)).containsOnly(ParkingReceiptDto(MoneyDto(1.0, MoneyDto.Currency.PLN)))
-
-        // when
-        parkingStartedAndEnded("s.hawking")
+        assertThat(parkingMeterFacade.findDriverReceipts(driverId)).containsOnly(ParkingReceiptDto(MoneyDto(expectedCostInPLN, MoneyDto.Currency.PLN)))
     }
 }

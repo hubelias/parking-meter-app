@@ -1,6 +1,16 @@
-package com.hubelias.parkingmeter.parkingmeterapp.application
+package com.hubelias.parkingmeter.parkingmeterapp.acceptance.tests
 
-import com.hubelias.parkingmeter.parkingmeterapp.domain.parking.occupation.ParkingOccupationRepository
+import com.hubelias.parkingmeter.parkingmeterapp.application.ParkingAlreadyStartedException
+import com.hubelias.parkingmeter.parkingmeterapp.application.ParkingMeterFacade
+import com.hubelias.parkingmeter.parkingmeterapp.application.UnknownDriverException
+import com.hubelias.parkingmeter.parkingmeterapp.domain.driver.Driver
+import com.hubelias.parkingmeter.parkingmeterapp.domain.driver.DriverProvider
+import com.hubelias.parkingmeter.parkingmeterapp.domain.driver.UserId
+import com.hubelias.parkingmeter.parkingmeterapp.domain.occupation.ParkingOccupationRepository
+import com.hubelias.parkingmeter.parkingmeterapp.fixtures.randomDriverId
+import com.hubelias.parkingmeter.parkingmeterapp.fixtures.randomVehicleId
+import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.whenever
 import org.junit.After
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -9,6 +19,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.junit4.SpringRunner
 
 @RunWith(SpringRunner::class)
@@ -19,6 +30,8 @@ class ParkingOccupationAcceptanceTests {
     private lateinit var parkingOccupationRepository: ParkingOccupationRepository
     @Autowired
     private lateinit var parkingMeterFacade: ParkingMeterFacade
+    @MockBean
+    private lateinit var driverProvider: DriverProvider
 
     @Before
     fun setUp() {
@@ -27,29 +40,31 @@ class ParkingOccupationAcceptanceTests {
 
     @Test
     fun parkingIsNotStartedAtBeginning() {
-        // given
-        val vehicleId = randomValidVehicleId()
+        assertFalse(parkingIsRegistered(randomVehicleId()))
+    }
 
-        // then
-        assertFalse(parkingMeterFacade.isParkingRegistered(vehicleId))
+    @Test(expected = UnknownDriverException::class)
+    fun startParking_unknownDriver() {
+        // when
+        parkingMeterFacade.startParking(randomDriverId(), randomVehicleId())
     }
 
     @Test
     fun startParking_parkingIsRegistered() {
         // given
-        val vehicleId = randomValidVehicleId()
+        val vehicleId = randomVehicleId()
 
         // when
         parkingIsStarted(vehicleId)
 
         // then
-        assertTrue(parkingMeterFacade.isParkingRegistered(vehicleId))
+        assertTrue(parkingIsRegistered(vehicleId))
     }
 
-    @Test(expected = IllegalStateException::class)
+    @Test(expected = ParkingAlreadyStartedException::class)
     fun startParking_alreadyStarted() {
         // given
-        val vehicleId = randomValidVehicleId()
+        val vehicleId = randomVehicleId()
         parkingIsStarted(vehicleId)
 
         // when
@@ -59,23 +74,23 @@ class ParkingOccupationAcceptanceTests {
     @Test
     fun endParking_parkingIsUnregistered() {
         // given
-        val vehicleId = randomValidVehicleId()
+        val vehicleId = randomVehicleId()
         parkingIsStarted(vehicleId)
 
         //when
         parkingIsEnded(vehicleId)
 
         //then
-        assertFalse(parkingMeterFacade.isParkingRegistered(vehicleId))
+        assertFalse(parkingIsRegistered(vehicleId))
     }
 
     @Test(expected = IllegalArgumentException::class)
     fun endParking_notStarted() {
         // given
-        val vehicleId = randomValidVehicleId()
+        val vehicleId = randomVehicleId()
 
         //when
-        parkingMeterFacade.endParking(vehicleId)
+        parkingIsEnded(vehicleId)
     }
 
     @After
@@ -83,11 +98,19 @@ class ParkingOccupationAcceptanceTests {
         parkingOccupationRepository.removeAll()
     }
 
-    private fun parkingIsStarted(vehicleId: String) {
-        parkingMeterFacade.startParking(randomValidDriverId(), vehicleId)
+    private fun parkingIsStarted(vehicleId: String, driverId: String = existingDriverId()) {
+        parkingMeterFacade.startParking(driverId, vehicleId)
     }
 
-    private fun parkingIsEnded(vehicleId: String = randomValidVehicleId()) {
+    private fun existingDriverId() = randomDriverId().also { id ->
+        val userId = UserId(id)
+        whenever(driverProvider.getDriver(userId)) doReturn Driver(userId, Driver.Type.DISABLED)
+    }
+
+    private fun parkingIsEnded(vehicleId: String) {
         parkingMeterFacade.endParking(vehicleId)
     }
+
+    private fun parkingIsRegistered(vehicleId: String) =
+            parkingMeterFacade.isParkingRegistered(vehicleId)
 }
