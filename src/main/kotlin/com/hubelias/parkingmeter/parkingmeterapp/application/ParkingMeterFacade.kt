@@ -50,5 +50,5 @@ class ParkingMeterFacade(
     fun findDriverReceipts(driverId: String) =
             parkingReceiptRepository.findByDriver(UserId(driverId)).map(ParkingReceipt::dto)
 
-    fun getDailyEarnings(dayOfYear: LocalDate) = Money.of(PLN, 20.0).dto()
+    fun getDailyEarnings(dayOfYear: LocalDate) = parkingReceiptRepository.calculateDailyEarnings(dayOfYear)
 }

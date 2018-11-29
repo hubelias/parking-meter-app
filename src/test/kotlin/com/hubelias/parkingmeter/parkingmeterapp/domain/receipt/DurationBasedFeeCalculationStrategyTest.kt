@@ -1,10 +1,10 @@
 package com.hubelias.parkingmeter.parkingmeterapp.domain.receipt
 
+import com.hubelias.parkingmeter.parkingmeterapp.fixtures.PLN
 import org.joda.money.Money
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.Test
-import java.math.RoundingMode
 import java.time.LocalDateTime
 import kotlin.math.pow
 
@@ -110,7 +110,6 @@ class DurationBasedFeeCalculationStrategyTest {
         )
     }
 
-    private fun Double.PLN() = Money.of(PLN, this, RoundingMode.HALF_EVEN)
 
     private fun createStrategy(
             firstHourPrice: Money = 3.33.PLN(),
