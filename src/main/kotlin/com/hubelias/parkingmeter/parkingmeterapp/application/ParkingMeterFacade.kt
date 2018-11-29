@@ -11,6 +11,7 @@ import org.joda.money.Money
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 
+
 @Service
 class ParkingMeterFacade(
         private val driverProvider: DriverProvider,
@@ -51,4 +52,3 @@ class ParkingMeterFacade(
 
     fun getDailyEarnings(dayOfYear: LocalDate) = Money.of(PLN, 20.0).dto()
 }
-

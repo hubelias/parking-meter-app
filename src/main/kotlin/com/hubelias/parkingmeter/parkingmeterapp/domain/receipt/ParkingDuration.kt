@@ -4,6 +4,7 @@ import java.lang.IllegalArgumentException
 import java.time.Duration
 import java.time.LocalDateTime
 
+
 data class ParkingDuration(
         val startedAt: LocalDateTime,
         val endedAt: LocalDateTime
