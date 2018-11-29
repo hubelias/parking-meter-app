@@ -24,11 +24,7 @@ import org.springframework.test.context.junit4.SpringRunner
 import java.time.Duration
 import java.time.LocalDateTime
 
-/**
- * no receipts at the beginning
- * parking ended create receipt - disabled, regular, <1h, 2h, 3h etc
- * daily earnings calculated by repository - so that's an easy shot
- */
+
 @RunWith(SpringRunner::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 class ParkingFeesAcceptanceTests {
