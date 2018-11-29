@@ -59,7 +59,7 @@ class ParkingFeesAcceptanceTests {
     @Test
     fun noReceiptsWhenParkingStarted() {
         // given
-        val driverId = regularDriverExists(randomDriverId())
+        val driverId = existingRegularDriverId(randomDriverId())
 
         // when
         parkingMeterFacade.startParking(driverId, randomVehicleId())
@@ -71,8 +71,8 @@ class ParkingFeesAcceptanceTests {
     @Test
     fun createReceiptForCorrectDriverWhenParkingEnded() {
         // given
-        val driverId = regularDriverExists("some.driver")
-        val anotherDriverId = regularDriverExists("another.driver")
+        val driverId = existingRegularDriverId("some.driver")
+        val anotherDriverId = existingRegularDriverId("another.driver")
 
         // when
         parkingStartedAndEnded(driverId)
@@ -160,13 +160,13 @@ class ParkingFeesAcceptanceTests {
     private fun testRegularFeeCalculation(parkingDuration: Duration, expectedCostInPLN: Double) {
         // given
         val driverId = randomDriverId()
-        regularDriverExists(driverId)
+        existingRegularDriverId(driverId)
 
         // when & then
         testFeeCalculation(driverId, parkingDuration, expectedCostInPLN)
     }
 
-    private fun regularDriverExists(driverId: String): String {
+    private fun existingRegularDriverId(driverId: String): String {
         val userId = UserId(driverId)
         whenever(driverProvider.getDriver(userId)) doReturn Driver(userId, Driver.Type.REGULAR)
         return driverId
@@ -175,13 +175,13 @@ class ParkingFeesAcceptanceTests {
     private fun testDisabledFeeCalculation(parkingDuration: Duration, expectedCostInPLN: Double) {
         // given
         val driverId = randomDriverId()
-        disabledDriverExists(driverId)
+        exsistingDisabledDriverId(driverId)
 
         // when & then
         testFeeCalculation(driverId, parkingDuration, expectedCostInPLN)
     }
 
-    private fun disabledDriverExists(driverId: String): String {
+    private fun exsistingDisabledDriverId(driverId: String): String {
         val userId = UserId(driverId)
         whenever(driverProvider.getDriver(userId)) doReturn Driver(userId, Driver.Type.DISABLED)
         return driverId
