@@ -1,2 +1,2 @@
 ./gradlew installBootDist
-./build/install/parking-meter-app-boot/parking-meter-app
+./build/install/parking-meter-app-boot/bin/parking-meter-app
