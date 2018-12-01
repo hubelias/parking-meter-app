@@ -7,8 +7,12 @@ import com.hubelias.parkingmeter.parkingmeterapp.domain.occupation.ParkingOccupa
 import com.hubelias.parkingmeter.parkingmeterapp.domain.occupation.ParkingOccupationRepository
 import com.hubelias.parkingmeter.parkingmeterapp.domain.occupation.VehicleId
 import com.hubelias.parkingmeter.parkingmeterapp.domain.receipt.*
+import com.hubelias.parkingmeter.parkingmeterapp.port.adapter.users.UserRole
+import org.springframework.context.annotation.Role
+import org.springframework.security.access.annotation.Secured
 import org.springframework.stereotype.Service
 import java.time.LocalDate
+import javax.annotation.security.RolesAllowed
 
 
 @Service

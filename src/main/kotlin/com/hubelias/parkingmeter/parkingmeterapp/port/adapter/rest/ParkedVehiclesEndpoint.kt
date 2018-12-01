@@ -1,12 +1,15 @@
 package com.hubelias.parkingmeter.parkingmeterapp.port.adapter.rest
 
 import com.hubelias.parkingmeter.parkingmeterapp.application.ParkingMeterFacade
+import com.hubelias.parkingmeter.parkingmeterapp.port.adapter.users.UserRole
 import org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
+import java.security.Principal
+import javax.annotation.security.RolesAllowed
 
 
 @Controller
@@ -17,9 +20,9 @@ class ParkedVehiclesEndpoint(
     data class StartParkingCmd(val vehicleId: String)
 
     @PostMapping
-    fun startParking(@RequestBody cmd: StartParkingCmd): ResponseEntity<Void> {
-        val driverId = "s.hawking" //TODO: as argument
-        parkingMeterFacade.startParking(driverId, cmd.vehicleId)
+    @RolesAllowed(UserRole.DRIVER)
+    fun startParking(@RequestBody cmd: StartParkingCmd, principal: Principal): ResponseEntity<Void> {
+        parkingMeterFacade.startParking(principal.name, cmd.vehicleId)
 
         val headers = HttpHeaders().apply {
             location = linkTo(ParkedVehiclesEndpoint::class.java).slash(cmd.vehicleId).toUri()
@@ -29,6 +32,7 @@ class ParkedVehiclesEndpoint(
     }
 
     @GetMapping("{vehicleId}")
+    @RolesAllowed(UserRole.DRIVER, UserRole.OPERATOR, UserRole.OWNER)
     fun isParkingRegistered(@PathVariable vehicleId: String): ResponseEntity<Unit> {
         return if (parkingMeterFacade.isParkingRegistered(vehicleId)) {
             ResponseEntity.noContent().build()
@@ -38,6 +42,7 @@ class ParkedVehiclesEndpoint(
     }
 
     @DeleteMapping("{vehicleId}")
+    @RolesAllowed(UserRole.DRIVER)
     fun endParking(@PathVariable vehicleId: String): ResponseEntity<Unit> {
         parkingMeterFacade.endParking(vehicleId)
         return ResponseEntity.noContent().build()
