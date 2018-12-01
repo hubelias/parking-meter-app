@@ -7,7 +7,6 @@ import com.hubelias.parkingmeter.parkingmeterapp.domain.occupation.ParkingOccupa
 import com.hubelias.parkingmeter.parkingmeterapp.domain.occupation.ParkingOccupationRepository
 import com.hubelias.parkingmeter.parkingmeterapp.domain.occupation.VehicleId
 import com.hubelias.parkingmeter.parkingmeterapp.domain.receipt.*
-import org.joda.money.Money
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 
@@ -50,5 +49,5 @@ class ParkingMeterFacade(
     fun findDriverReceipts(driverId: String) =
             parkingReceiptRepository.findByDriver(UserId(driverId)).map(ParkingReceipt::dto)
 
-    fun getDailyEarnings(dayOfYear: LocalDate) = parkingReceiptRepository.calculateDailyEarnings(dayOfYear)
+    fun getDailyEarnings(dayOfYear: LocalDate) = parkingReceiptRepository.calculateDailyEarnings(dayOfYear).dto()
 }
