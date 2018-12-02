@@ -2,7 +2,6 @@ package com.hubelias.parkingmeter.port.adapter.rest
 
 import com.hubelias.parkingmeter.application.MoneyDto
 import com.hubelias.parkingmeter.application.ParkingMeterFacade
-import com.hubelias.parkingmeter.port.adapter.users.UserRole
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.whenever
 import org.junit.Test

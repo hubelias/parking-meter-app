@@ -1,8 +1,10 @@
 package com.hubelias.parkingmeter.port.adapter.users
 
 import com.hubelias.parkingmeter.domain.driver.Driver
+import com.hubelias.parkingmeter.domain.driver.DriverId
 import com.hubelias.parkingmeter.domain.driver.DriverProvider
-import com.hubelias.parkingmeter.domain.driver.UserId
+import com.hubelias.parkingmeter.domain.driver.UnknownDriverException
+import com.hubelias.parkingmeter.port.adapter.rest.UserRole
 import org.springframework.security.core.userdetails.User
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
@@ -27,10 +29,10 @@ class UsersAdapter : DriverProvider, UserDetailsService {
             UnsafeUser("d.trump", "imawesome", isOwner = true)
     )
 
-    override fun getDriver(userId: UserId): Driver? {
-        return findByUsername(userId.id)?.driverType?.let { driverType ->
-            Driver(userId, driverType)
-        }
+    override fun getDriver(driverId: DriverId): Driver {
+        return findByUsername(driverId.username)?.driverType?.let { driverType ->
+            Driver(driverId, driverType)
+        } ?: throw UnknownDriverException(driverId)
     }
 
     private fun findByUsername(username: String) = users.find { it.username == username }

@@ -1,4 +1,4 @@
-package com.hubelias.parkingmeter.port.adapter.users
+package com.hubelias.parkingmeter.port.adapter.rest
 
 
 object UserRole {

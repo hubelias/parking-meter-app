@@ -1,7 +1,6 @@
 package com.hubelias.parkingmeter.port.adapter.rest
 
 import com.hubelias.parkingmeter.application.ParkingMeterFacade
-import com.hubelias.parkingmeter.port.adapter.users.UserRole
 import org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus

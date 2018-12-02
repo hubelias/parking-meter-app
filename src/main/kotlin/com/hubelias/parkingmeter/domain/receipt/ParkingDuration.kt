@@ -9,10 +9,10 @@ data class ParkingDuration(
         val endedAt: LocalDateTime
 ) {
     init {
-        if(endedAt < startedAt) {
+        if (endedAt < startedAt) {
             throw IllegalArgumentException("Parking duration cannot be negative!")
         }
     }
 
-    val duration : Duration get() = Duration.between(startedAt, endedAt)
+    val duration: Duration = Duration.between(startedAt, endedAt)
 }

@@ -1,5 +1,6 @@
 package com.hubelias.parkingmeter.port.adapter.db
 
+import com.hubelias.parkingmeter.domain.occupation.ParkingAlreadyStartedException
 import com.hubelias.parkingmeter.domain.occupation.ParkingOccupation
 import com.hubelias.parkingmeter.domain.occupation.ParkingOccupationRepository
 import com.hubelias.parkingmeter.domain.occupation.VehicleId
@@ -8,25 +9,23 @@ import java.util.concurrent.ConcurrentHashMap
 
 @Repository
 class InMemoryParkingOccupationRepository : ParkingOccupationRepository {
-    private val tickets = ConcurrentHashMap<String, ParkingOccupation>()
+    private val parkedVehicles = ConcurrentHashMap<String, ParkingOccupation>()
 
     override fun add(parkingOccupation: ParkingOccupation) {
-        tickets[parkingOccupation.id] = parkingOccupation
+        parkedVehicles.putIfAbsent(parkingOccupation.id, parkingOccupation)?.let { alreadyExisting ->
+            throw ParkingAlreadyStartedException(alreadyExisting.vehicleId)
+        }
     }
 
     override fun findOne(vehicleId: VehicleId): ParkingOccupation? {
-        return tickets.values.find { it.vehicleId == vehicleId }
+        return parkedVehicles.values.find { it.vehicleId == vehicleId }
     }
 
     override fun remove(parkingOccupation: ParkingOccupation) {
-        tickets.remove(parkingOccupation.id)
-    }
-
-    override fun isParkingRegistered(vehicleId: VehicleId): Boolean {
-        return tickets.values.any { it.vehicleId == vehicleId }
+        parkedVehicles.remove(parkingOccupation.id)
     }
 
     override fun removeAll() {
-        tickets.clear()
+        parkedVehicles.clear()
     }
 }

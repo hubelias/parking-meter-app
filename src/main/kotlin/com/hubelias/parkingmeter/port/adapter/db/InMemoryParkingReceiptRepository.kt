@@ -1,6 +1,6 @@
 package com.hubelias.parkingmeter.port.adapter.db
 
-import com.hubelias.parkingmeter.domain.driver.UserId
+import com.hubelias.parkingmeter.domain.driver.DriverId
 import com.hubelias.parkingmeter.domain.receipt.PLN
 import com.hubelias.parkingmeter.domain.receipt.ParkingReceipt
 import com.hubelias.parkingmeter.domain.receipt.ParkingReceiptRepository
@@ -17,8 +17,8 @@ class InMemoryParkingReceiptRepository : ParkingReceiptRepository {
         receipts.add(parkingReceipt)
     }
 
-    override fun findByDriver(userId: UserId): List<ParkingReceipt> {
-        return receipts.filter { it.userId == userId }
+    override fun findByDriver(driverId: DriverId): List<ParkingReceipt> {
+        return receipts.filter { it.driverId == driverId }
     }
 
     override fun calculateDailyEarnings(dayOfYear: LocalDate) = receipts

@@ -2,9 +2,8 @@ package com.hubelias.parkingmeter.port.adapter.rest
 
 import com.hubelias.parkingmeter.application.ParkingMeterFacade
 import com.hubelias.parkingmeter.domain.occupation.InvalidVehicleId
-import com.hubelias.parkingmeter.fixtures.randomVehicleId
 import com.hubelias.parkingmeter.port.adapter.rest.ParkedVehiclesEndpointTest.Companion.DRIVER_ID
-import com.hubelias.parkingmeter.port.adapter.users.UserRole
+import com.hubelias.parkingmeter.utils.randomVehicleId
 import com.nhaarman.mockitokotlin2.*
 import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.containsString
