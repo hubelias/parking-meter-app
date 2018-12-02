@@ -1,11 +1,9 @@
 package com.hubelias.parkingmeter.application
 
+import com.hubelias.parkingmeter.domain.driver.DriverId
 import com.hubelias.parkingmeter.domain.driver.DriverProvider
-import com.hubelias.parkingmeter.domain.driver.UserId
-import com.hubelias.parkingmeter.domain.occupation.DateTimeProvider
-import com.hubelias.parkingmeter.domain.occupation.ParkingOccupation
-import com.hubelias.parkingmeter.domain.occupation.ParkingOccupationRepository
-import com.hubelias.parkingmeter.domain.occupation.VehicleId
+import com.hubelias.parkingmeter.domain.driver.UnknownDriverException
+import com.hubelias.parkingmeter.domain.occupation.*
 import com.hubelias.parkingmeter.domain.receipt.ParkingFeeCalculator
 import com.hubelias.parkingmeter.domain.receipt.ParkingReceipt
 import com.hubelias.parkingmeter.domain.receipt.ParkingReceiptRepository
@@ -23,25 +21,21 @@ class ParkingMeterFacade(
         private val parkingFeeCalculator: ParkingFeeCalculator
 ) {
     fun isParkingRegistered(vehicleId: String): Boolean {
-        return parkingOccupationRepository.isParkingRegistered(VehicleId(vehicleId))
+        return parkingOccupationRepository.findOne(VehicleId(vehicleId)) != null
     }
 
-    fun startParking(driverId: String, vehicleId: String) {
-        val driver = driverProvider.getDriver(UserId(driverId))
-                ?: throw UnknownDriverException(driverId)
-
-        if (isParkingRegistered(vehicleId)) {
-            throw ParkingAlreadyStartedException(vehicleId)
-        } //TODO - can be solved by distinct on DB
-
+    @Throws(UnknownDriverException::class, ParkingAlreadyStartedException::class)
+    fun startParking(username: String, vehicleId: String) {
+        val driver = driverProvider.getDriver(DriverId(username))
         val ticket = ParkingOccupation.start(driver, VehicleId(vehicleId), dateTimeProvider)
 
         parkingOccupationRepository.add(ticket)
     }
 
+    @Throws(IllegalArgumentException::class)
     fun endParking(vehicleId: String) {
         val parkingOccupation = parkingOccupationRepository.findOne(VehicleId(vehicleId))
-                ?: throw IllegalArgumentException("There is no started ticket for vehicle $vehicleId")
+                ?: throw IllegalArgumentException("Parking has not been started for vehicle $vehicleId")
 
         val parkingReceipt = parkingOccupation.end(parkingFeeCalculator, dateTimeProvider)
 
@@ -49,8 +43,8 @@ class ParkingMeterFacade(
         parkingReceiptRepository.add(parkingReceipt)
     }
 
-    fun findDriverReceipts(driverId: String) =
-            parkingReceiptRepository.findByDriver(UserId(driverId)).map(ParkingReceipt::dto)
+    fun findDriverReceipts(username: String) =
+            parkingReceiptRepository.findByDriver(DriverId(username)).map(ParkingReceipt::dto)
 
     fun getDailyEarnings(dayOfYear: LocalDate) = parkingReceiptRepository.calculateDailyEarnings(dayOfYear).dto()
 }

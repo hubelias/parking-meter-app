@@ -9,13 +9,13 @@ import java.time.LocalDateTime
 
 class ParkingOccupation(
         private val driver: Driver,
-        val vehicleId: VehicleId, //TODO: distinct
+        val vehicleId: VehicleId,
         private val startedAt: LocalDateTime,
         val id: String
 ) {
     companion object {
         fun start(driver: Driver, vehicleId: VehicleId, dateTimeProvider: DateTimeProvider) =
-                ParkingOccupation(driver, vehicleId, dateTimeProvider.currentDateTime(), vehicleId.id) //TODO vehicleId as Id?
+                ParkingOccupation(driver, vehicleId, dateTimeProvider.currentDateTime(), vehicleId.registrationNumber)
     }
 
     fun end(parkingFeeCalculator: ParkingFeeCalculator, dateTimeProvider: DateTimeProvider): ParkingReceipt {

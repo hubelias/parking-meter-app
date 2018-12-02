@@ -4,12 +4,12 @@ import com.hubelias.parkingmeter.application.MoneyDto
 import com.hubelias.parkingmeter.application.ParkingMeterFacade
 import com.hubelias.parkingmeter.application.ParkingReceiptDto
 import com.hubelias.parkingmeter.domain.driver.Driver
+import com.hubelias.parkingmeter.domain.driver.DriverId
 import com.hubelias.parkingmeter.domain.driver.DriverProvider
-import com.hubelias.parkingmeter.domain.driver.UserId
 import com.hubelias.parkingmeter.domain.occupation.DateTimeProvider
 import com.hubelias.parkingmeter.domain.receipt.ParkingReceiptRepository
-import com.hubelias.parkingmeter.fixtures.randomDriverId
-import com.hubelias.parkingmeter.fixtures.randomVehicleId
+import com.hubelias.parkingmeter.utils.randomUsername
+import com.hubelias.parkingmeter.utils.randomVehicleId
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
@@ -46,36 +46,36 @@ class ParkingFeesAcceptanceTests {
     @Test
     fun noReceiptsAtTheBeginning() {
         // given
-        val driverId = randomDriverId()
+        val username = randomUsername()
 
         // then
-        assertThat(parkingMeterFacade.findDriverReceipts(driverId)).isEmpty()
+        assertThat(parkingMeterFacade.findDriverReceipts(username)).isEmpty()
     }
 
     @Test
     fun noReceiptsWhenParkingStarted() {
         // given
-        val driverId = existingRegularDriverId(randomDriverId())
+        val username = existingRegularDriverUsername(randomUsername())
 
         // when
-        parkingMeterFacade.startParking(driverId, randomVehicleId())
+        parkingMeterFacade.startParking(username, randomVehicleId())
 
         // then
-        assertThat(parkingMeterFacade.findDriverReceipts(driverId)).isEmpty()
+        assertThat(parkingMeterFacade.findDriverReceipts(username)).isEmpty()
     }
 
     @Test
     fun createReceiptForCorrectDriverWhenParkingEnded() {
         // given
-        val driverId = existingRegularDriverId("some.driver")
-        val anotherDriverId = existingRegularDriverId("another.driver")
+        val username = existingRegularDriverUsername("some.driver")
+        val anotherUsername = existingRegularDriverUsername("another.driver")
 
         // when
-        parkingStartedAndEnded(driverId)
+        parkingStartedAndEnded(username)
 
         // then
-        assertThat(parkingMeterFacade.findDriverReceipts(driverId)).hasSize(1)
-        assertThat(parkingMeterFacade.findDriverReceipts(anotherDriverId)).isEmpty()
+        assertThat(parkingMeterFacade.findDriverReceipts(username)).hasSize(1)
+        assertThat(parkingMeterFacade.findDriverReceipts(anotherUsername)).isEmpty()
     }
 
     @Test
@@ -140,14 +140,14 @@ class ParkingFeesAcceptanceTests {
     }
 
     private fun parkingStartedAndEnded(
-            driverId: String,
+            username: String,
             parkingDuration: Duration = Duration.ofMinutes(25)
     ) {
         val vehicleId = randomVehicleId()
         val startTime = LocalDateTime.now()
 
         whenever(dateTimeProvider.currentDateTime()).doReturn(startTime)
-        parkingMeterFacade.startParking(driverId, vehicleId)
+        parkingMeterFacade.startParking(username, vehicleId)
 
         whenever(dateTimeProvider.currentDateTime()).doReturn(startTime.plus(parkingDuration))
         parkingMeterFacade.endParking(vehicleId)
@@ -155,39 +155,38 @@ class ParkingFeesAcceptanceTests {
 
     private fun testRegularFeeCalculation(parkingDuration: Duration, expectedCostInPLN: Double) {
         // given
-        val driverId = randomDriverId()
-        existingRegularDriverId(driverId)
+        val username = existingRegularDriverUsername(randomUsername())
 
         // when & then
-        testFeeCalculation(driverId, parkingDuration, expectedCostInPLN)
+        testFeeCalculation(username, parkingDuration, expectedCostInPLN)
     }
 
-    private fun existingRegularDriverId(driverId: String): String {
-        val userId = UserId(driverId)
-        whenever(driverProvider.getDriver(userId)) doReturn Driver(userId, Driver.Type.REGULAR)
-        return driverId
+    private fun existingRegularDriverUsername(username: String): String {
+        val driverId = DriverId(username)
+        whenever(driverProvider.getDriver(driverId)) doReturn Driver(driverId, Driver.Type.REGULAR)
+        return username
     }
 
     private fun testDisabledFeeCalculation(parkingDuration: Duration, expectedCostInPLN: Double) {
         // given
-        val driverId = randomDriverId()
-        exsistingDisabledDriverId(driverId)
+        val username = existingDisabledDriverUsername(randomUsername())
 
         // when & then
-        testFeeCalculation(driverId, parkingDuration, expectedCostInPLN)
+        testFeeCalculation(username, parkingDuration, expectedCostInPLN)
     }
 
-    private fun exsistingDisabledDriverId(driverId: String): String {
-        val userId = UserId(driverId)
-        whenever(driverProvider.getDriver(userId)) doReturn Driver(userId, Driver.Type.DISABLED)
-        return driverId
+    private fun existingDisabledDriverUsername(username: String): String {
+        val driverId = DriverId(username)
+        whenever(driverProvider.getDriver(driverId)) doReturn Driver(driverId, Driver.Type.DISABLED)
+        return username
     }
 
-    private fun testFeeCalculation(driverId: String, parkingDuration: Duration, expectedCostInPLN: Double) {
+    private fun testFeeCalculation(username: String, parkingDuration: Duration, expectedCostInPLN: Double) {
         // when
-        parkingStartedAndEnded(driverId, parkingDuration)
+        parkingStartedAndEnded(username, parkingDuration)
 
         // then
-        assertThat(parkingMeterFacade.findDriverReceipts(driverId)).containsOnly(ParkingReceiptDto(MoneyDto(expectedCostInPLN, MoneyDto.Currency.PLN)))
+        assertThat(parkingMeterFacade.findDriverReceipts(username))
+                .containsOnly(ParkingReceiptDto(MoneyDto(expectedCostInPLN, MoneyDto.Currency.PLN)))
     }
 }

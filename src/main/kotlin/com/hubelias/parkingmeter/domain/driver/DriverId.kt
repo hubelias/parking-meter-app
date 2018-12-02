@@ -1,4 +1,4 @@
 package com.hubelias.parkingmeter.domain.driver
 
 
-data class UserId(val id: String)
+data class DriverId(val username: String)

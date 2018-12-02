@@ -2,7 +2,6 @@ package com.hubelias.parkingmeter.port.adapter.rest
 
 import com.hubelias.parkingmeter.application.MoneyDto
 import com.hubelias.parkingmeter.application.ParkingMeterFacade
-import com.hubelias.parkingmeter.port.adapter.users.UserRole
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping

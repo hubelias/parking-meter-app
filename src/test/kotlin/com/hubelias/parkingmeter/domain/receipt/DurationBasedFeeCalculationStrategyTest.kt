@@ -1,6 +1,6 @@
 package com.hubelias.parkingmeter.domain.receipt
 
-import com.hubelias.parkingmeter.fixtures.PLN
+import com.hubelias.parkingmeter.utils.PLN
 import org.joda.money.Money
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
@@ -10,16 +10,13 @@ import kotlin.math.pow
 
 
 class DurationBasedFeeCalculationStrategyTest {
-    @Test
-    fun freeIfDurationIsZero() {
-        assertEquals(0.0.PLN(), createStrategy().calculateParkingFee(minutes(0)))
-    }
 
     @Test
     fun useFirstHourPriceWhenParkingNoMoreThanHour() {
         val firstHourPrice = 1.30.PLN()
         val strategy = createStrategy(firstHourPrice)
 
+        assertEquals(firstHourPrice, strategy.calculateParkingFee(minutes(0)))
         assertEquals(firstHourPrice, strategy.calculateParkingFee(minutes(10)))
         assertEquals(firstHourPrice, strategy.calculateParkingFee(minutes(30)))
         assertEquals(firstHourPrice, strategy.calculateParkingFee(minutes(60)))
@@ -109,7 +106,6 @@ class DurationBasedFeeCalculationStrategyTest {
                 strategy.calculateParkingFee(hoursAndMinutes(5, 0))
         )
     }
-
 
     private fun createStrategy(
             firstHourPrice: Money = 3.33.PLN(),

@@ -1,10 +1,10 @@
 package com.hubelias.parkingmeter.port.adapter.db
 
-import com.hubelias.parkingmeter.domain.driver.UserId
+import com.hubelias.parkingmeter.domain.driver.DriverId
 import com.hubelias.parkingmeter.domain.receipt.PLN
 import com.hubelias.parkingmeter.domain.receipt.ParkingReceipt
-import com.hubelias.parkingmeter.fixtures.PLN
-import com.hubelias.parkingmeter.fixtures.randomDriverId
+import com.hubelias.parkingmeter.utils.PLN
+import com.hubelias.parkingmeter.utils.randomUsername
 import org.assertj.core.api.Assertions.assertThat
 import org.joda.money.Money
 import org.junit.Assert.assertEquals
@@ -20,9 +20,9 @@ class InMemoryParkingReceiptRepositoryTest {
     @Test
     fun testFindByDriver() {
         // given
-        val driverId = UserId("good.driver")
+        val driverId = DriverId("good.driver")
         val aReceipt = ParkingReceipt(driverId, LocalDateTime.now(), 3.0.PLN())
-        val anotherDriverId = UserId("better.driver")
+        val anotherDriverId = DriverId("better.driver")
 
         // then
         assertThat(parkingReceiptRepository.findByDriver(driverId)).isEmpty()
@@ -68,6 +68,6 @@ class InMemoryParkingReceiptRepositoryTest {
     }
 
     private fun addReceipt(issuedAt: LocalDateTime, priceInPLN: Double) {
-        parkingReceiptRepository.add(ParkingReceipt(UserId(randomDriverId()), issuedAt, Money.of(PLN, priceInPLN)))
+        parkingReceiptRepository.add(ParkingReceipt(DriverId(randomUsername()), issuedAt, Money.of(PLN, priceInPLN)))
     }
 }
