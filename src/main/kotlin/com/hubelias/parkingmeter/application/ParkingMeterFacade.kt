@@ -7,7 +7,6 @@ import com.hubelias.parkingmeter.domain.occupation.*
 import com.hubelias.parkingmeter.domain.receipt.ParkingFeeCalculator
 import com.hubelias.parkingmeter.domain.receipt.ParkingReceipt
 import com.hubelias.parkingmeter.domain.receipt.ParkingReceiptRepository
-import com.hubelias.parkingmeter.domain.receipt.dto
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 
